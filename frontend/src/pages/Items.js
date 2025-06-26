@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useData } from '../state/DataContext';
 import { Link } from 'react-router-dom';
+import { FixedSizeList as List } from 'react-window';
 import './items.styles.css';
 import SkeletonList from '../components/SkeletonList';
 import Card from '../components/Card';
@@ -46,6 +47,15 @@ function Items() {
     setSkip(newSkip);
   };
 
+  const Row = ({ data, index, style }) => {
+    const item = data[index];
+    return (
+      <li key={item.id} style={style}>
+        <Link to={'/items/' + item.id}>{item.name}</Link>
+      </li>
+    );
+  };
+
   const renderList = () => {
     if (loading) {
       return <SkeletonList count={3} />;
@@ -55,14 +65,20 @@ function Items() {
     }
     return (
       <>
-        <Card>
-          <ul class='item-list'>
-            {items.map((item) => (
-              <li key={item.id}>
-                <Link to={'/items/' + item.id}>{item.name}</Link>
-              </li>
-            ))}
-          </ul>
+        <Card styles={{ display: 'flex', justifyContent: 'center' }}>
+          <List
+            height={300}
+            className='item-list'
+            outerElementType='ul'
+            itemData={items}
+            itemCount={items.length}
+            itemKey={(index, data) => data[index].id}
+            itemRenderer={Row}
+            itemSize={50}
+            width={500}
+          >
+            {Row}
+          </List>
         </Card>
         <Pagination
           currentPage={currentPage}
